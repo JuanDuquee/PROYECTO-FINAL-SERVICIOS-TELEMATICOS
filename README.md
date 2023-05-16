@@ -584,10 +584,32 @@ port router = 6446
 --time=30 
 --threads=10
 
-sysbench oltp_read_write --tables=100 --table-size=100000 --db-driver=mysql --mysql-host=localhost --mysql-db=UAO --mysql-user=root --mysql-port=6446 --time=30 --threads=16 prepare (preparar las pruebas)
+sysbench oltp_read_write --tables=100 --table-size=10000 --db-driver=mysql --mysql-host=localhost --mysql-db=UAO --mysql-user=root --mysql-port=6446 --time=30 --threads=16 prepare (preparar las pruebas)
 
 sysbench oltp_read_write --tables=100 --table-size=100000 --db-driver=mysql --mysql-host=localhost --mysql-db=UAO --mysql-user=root --mysql-port=6446 --time=30 --threads=16 run (correr las pruebas)
 
 sysbench oltp_read_only --tables=10 --table-size=100 --db-driver=mysql --mysql-host=localhost --mysql-db=UAO --mysql-user=root --mysql-port=6446 --time=30 --threads=10 run
 
 sysbench oltp_read_write --tables=100 --table-size=100000 --db-driver=mysql --mysql-host=localhost --mysql-db=UAO --mysql-user=root --mysql-port=6446 --time=30 --threads=16 cleanup (para borrar las pruebas)
+
+============================= MAS PRUEBAS ========================
+
+Pruebas de lectura intensiva:
+sysbench oltp_read_only --tables=50 --table-size=5000 --db-driver=mysql --mysql-host=localhost --mysql-db=UAO --mysql-user=root --mysql-port=6446 --time=60 --threads=32 prepare
+
+sysbench oltp_read_only --tables=50 --table-size=5000 --db-driver=mysql --mysql-host=localhost --mysql-db=UAO --mysql-user=root --mysql-port=6446 --time=60 --threads=32 run
+
+Pruebas de escritura intensiva:
+sysbench oltp_write_only --tables=100 --table-size=2000 --db-driver=mysql --mysql-host=localhost --mysql-db=UAO --mysql-user=root --mysql-port=6446 --time=120 --threads=64 prepare
+
+sysbench oltp_write_only --tables=100 --table-size=2000 --db-driver=mysql --mysql-host=localhost --mysql-db=UAO --mysql-user=root --mysql-port=6446 --time=120 --threads=40 run
+
+Pruebas de carga mixta (lectura y escritura):
+sysbench oltp_read_write --tables=200 --table-size=10000 --db-driver=mysql --mysql-host=localhost --mysql-db=UAO --mysql-user=root --mysql-port=6446 --time=180 --threads=128 prepare
+
+sysbench oltp_read_write --tables=200 --table-size=10000 --db-driver=mysql --mysql-host=localhost --mysql-db=UAO --mysql-user=root --mysql-port=6446 --time=180 --threads=9 run
+
+Pruebas de concurrencia:
+sysbench oltp_read_write --tables=50 --table-size=5000 --db-driver=mysql --mysql-host=localhost --mysql-db=UAO --mysql-user=root --mysql-port=6446 --time=120 --threads=64 --report-interval=5 --histogram prepare
+
+sysbench oltp_read_write --tables=50 --table-size=5000 --db-driver=mysql --mysql-host=localhost --mysql-db=UAO --mysql-user=root --mysql-port=6446 --time=120 --threads=36 --report-interval=5 --histogram run
