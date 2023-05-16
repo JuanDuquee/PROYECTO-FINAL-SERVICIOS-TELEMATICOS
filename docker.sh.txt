@@ -1,0 +1,73 @@
+#!/bin/bash
+echo "===================================================================================="
+echo "=====BIENVENIDOS A LA EMPRESA FUTURESOFT, DONDE LA TECNOLOGIA ES TU MEJOR AMIGA====="
+echo "===================================================================================="
+echo "=============================APROVISIONAMIENTO======================================"
+echo "===================================================================================="
+
+
+echo "================================DESACTIVANDO SELINUX================================"
+cat <<TEST> /etc/selinux/config
+# This file controls the state of SELinux on the system.
+# SELINUX= can take one of these three values:
+#     enforcing - SELinux security policy is enforced.
+#     permissive - SELinux prints warnings instead of enforcing.
+#     disabled - No SELinux policy is loaded.
+SELINUX=disabled
+# SELINUXTYPE= can take one of three values:
+#     targeted - Targeted processes are protected,
+#     minimum - Modification of targeted policy. Only selected processes are protected.
+#     mls - Multi Level Security protection.
+SELINUXTYPE=targeted
+TEST
+
+echo "=================REINICIAMOS LAS MAQUINAS PARA APLICAR CAMBIOS========================"
+sudo reboot
+
+echo "===============================DESACTIVANDO SERVICIO FIREWALLD======================"
+sudo service firewalld stop
+
+#echo "===============================INSTALANDO SERVICIO MYSQL============================"
+sudo yum update -y
+sudo wget https://dev.mysql.com/get/mysql80-community-release-el7-7.noarch.rpm
+sudo rpm -Uvh mysql80-community-release-el7-7.noarch.rpm
+sudo yum install mysql-server -y
+sudo yum install mysql-shell -y
+sudo systemctl start mysqld
+sudo systemctl status mysqld
+
+mysql --version
+mysqlsh --version
+
+#echo "=========================CONFIGURANDO LAS MAQUINAS============================"
+
+cat <<TEST> /etc/hosts
+192.168.50.2 mysqlrouter mysqlrouter
+192.168.50.3 mysql1 mysql1
+192.168.50.4 mysql2 mysql2
+192.168.50.5 mysql3 mysql3
+192.168.50.6 cliente cliente
+TEST
+
+cat <<TEST>/etc/my.cnf
+report_host = mysqlrouter
+report_host = mysql1
+report_host = mysql2
+report_host = mysql3
+report_host = cliente
+TEST
+
+sudo reboot
+sudo service firewalld stop
+
+#echo "===============================INSTALANDO DOCKER============================"
+
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+docker --version
+systemctl start docker
+systemctl status docker
+
+echo "===================================================================================="
+echo "===========================TERMINAMOS APROVISIONAMIENTO============================="
+echo "===================================================================================="
